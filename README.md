@@ -1,9 +1,5 @@
 # AllegroApi
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/allegro_api`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
-
 ## Installation
 
 Install the gem and add to the application's Gemfile by executing:
@@ -16,7 +12,54 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 ## Usage
 
-TODO: Write usage instructions here
+### Example usage
+
+```ruby
+auth = AllegroApi::Auth.new(*Rails.application.credentials.allegro.values)
+# or
+auth = AllegroApi::Auth.new # client_id and secret taken from ENV["ALLEGRO_CLIENT_ID"], ENV["ALLEGRO_SECRET"]
+
+auth.fetch_code
+I, [2022-05-24T19:36:53.119343 #20694]  INFO -- : confirm in browser: https://allegro.pl/skojarz-aplikacje?code=ehxroj2jz
+ =>
+{"device_code"=>"LgR6IU3AuIu8y4KwnEN2eaT241AFetmp",
+ "expires_in"=>3600,
+ "user_code"=>"ehxroj2jz",
+ "interval"=>5,
+ "verification_uri"=>"https://allegro.pl/skojarz-aplikacje",
+ "verification_uri_complete"=>"https://allegro.pl/skojarz-aplikacje?code=ehxroj2jz"}
+
+auth.device_code
+ => "LgR6IU3AuIu8y4KwnEN2eaT241AFetmp"
+
+# Confirm in browser from link above
+
+auth.fetch_access_token
+ =>
+{"access_token"=>
+  "eyJhbGciOi..gewXuBw",
+ "token_type"=>"bearer",
+ "refresh_token"=>
+  "eyJhbGciOiJSUz..u8BkOxXnqtptdg",
+ "expires_in"=>43199,
+ "scope"=>"allegro:api:orders:read allegro:api:billing:read allegro:api:payments:read",
+ "allegro_api"=>true,
+ "jti"=>"61dc1bf1-6921-4831-9a3c-939add1eefaz"}
+
+ auth.access_token
+  => "eyJhbGciOiJSUzI1NiIsInR5cCI6I..D2EjkWgewXuBw"
+
+client = AllegroApi::Client.new(auth.access_token)
+client.get('order/checkout-forms')
+"https://api.allegro.pl/order/checkout-forms"
+ =>
+{"checkoutForms"=>
+  []
+}
+
+client.get('order/events')
+ => {"events"=>[]}
+```
 
 ## Development
 
@@ -26,7 +69,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/allegro_api. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/[USERNAME]/allegro_api/blob/master/CODE_OF_CONDUCT.md).
+Bug reports and pull requests are welcome on GitHub at https://github.com/dawidof/allegro_api. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/dawidof/allegro_api/blob/main/CODE_OF_CONDUCT.md).
 
 ## License
 
@@ -34,4 +77,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Code of Conduct
 
-Everyone interacting in the AllegroApi project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/allegro_api/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the AllegroApi project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/dawidof/allegro_api/blob/master/CODE_OF_CONDUCT.md).
